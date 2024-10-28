@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Function Plotter</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1 style="color: #eeeeee;">Convolution Visualizer</h1>
+    </header>
+    <div id="canvasContainer">
+        <canvas id="plotCanvas" height="400"></canvas>
+        <div class="legend">
+            <div class="legendItem">
+                <div class="checkbox-container">
+                    <label class="custom-checkbox red-checkbox">
+                        <input type="checkbox" id="toggleFt" checked>
+                        <span class="checkmark", style="border-color: red;"></span>
+                    </label>
+                </div>            
+                <span>f(t)</span>
+            </div>
+            <div class="legendItem">
+                <div class="checkbox-container">
+                    <label class="custom-checkbox orange-checkbox">
+                        <input type="checkbox" id="toggleGt" checked>
+                        <span class="checkmark", style="border-color: orange;"></span>
+                    </label>
+                </div>            
+                <span>g(t)</span>
+            </div>
+            <div class="legendItem">
+                <div class="checkbox-container">
+                    <label class="custom-checkbox cyan-checkbox">
+                        <input type="checkbox" id="toggleConvolution" checked>
+                        <span class="checkmark", style="border-color: cyan;"></span>
+                    </label>
+                </div>            
+                <span>(f ⭑ g)(t)</span>
+            </div>
+        </div>
+    </div>
+    <hr class="functionHr">
+    <div class="functionInput">
+        <p class="functionLabel">f(t) =<p>
+        <input type="text" class="functionText" id="fInput" placeholder="t * u(t) * u(2-t)" value="u(t)">
+        <select class="functionOptions "id="fOptions" name="fOptions">
+            <option value="default" disabled>-- Select One --</option>
+            <option value="unitStep" selected>Unit Step</option>
+            <option value="pulse">Pulse</option>
+            <option value="expDecay">Exponential Decay</option>
+            <option value="triangle">Triangle</option>
+            <option value="dampedSine">Damped Sine</option>
+            <option value="dampedSq">Damped Square</option>
+            <option value="biphasic">Biphasic</option>
+            <option value="triphasic">Triphasic</option>
+        </select>
+    </div>
+    <hr class="functionHr">
+    <div class="functionInput">
+        <p class="functionLabel">g(t) =<p>
+        <input type="text" class="functionText" id="gInput" placeholder="e^(-t/2) * u(t)" value="exp(-t) * u(t)">
+        <select class="functionOptions "id="gOptions" name="gOptions">
+            <option value="default" disabled>-- Select One --</option>
+            <option value="unitStep">Unit Step</option>
+            <option value="pulse">Pulse</option>
+            <option value="expDecay" selected>Exponential Decay</option>
+            <option value="triangle">Triangle</option>
+            <option value="dampedSine">Damped Sine</option>
+            <option value="dampedSq">Damped Square</option>
+            <option value="biphasic">Biphasic</option>
+            <option value="triphasic">Triphasic</option>
+        </select>
+    </div>
+    <hr class="functionHr">
+    <canvas id="slideCanvas" width="400" height="400"></canvas>
+    <div>
+        <input type="range" id="tOffsetSlider" name="tOffset" min="-1" max="5" step="0.001">
+    </div>
+    <script src="function.js"></script>
+    <script src="core.js"></script>
+</body>
+</html>

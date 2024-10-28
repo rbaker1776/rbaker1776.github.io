@@ -1,0 +1,147 @@
+* {
+    font-family: "Helvetica", "Roboto", sans-serif; 
+    margin: 0;
+    padding: 0;
+    background: black;
+}
+
+header {
+    padding: 1rem;
+    font-size: 20pt;
+}
+
+body {
+    text-align: center;
+    margin: 0;
+}
+
+canvas {
+    width: 100%;
+}
+
+.functionHr {
+    margin-top: 0;
+    border: none;
+    border-top: 1px solid gray;
+}
+
+.functionInput {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 3rem;
+    margin-right: 3rem;
+    padding: 1rem 0;
+}
+
+.functionText {
+    width: calc(100vw - 24rem);
+    font-family: "Cambria Math", "Georgia", "Times", serif;
+    font-size: 24pt;
+    color: #eeeeee;
+    border: none;
+    margin-right: 0;
+}
+
+.functionLabel {
+    color: gray;
+    font-family: "Cambria Math", "Georgia", "Times", serif;
+    font-size: 24pt;
+    font-style: italic;
+    margin-right: 0.75rem;
+    border: none;
+}
+
+.functionOptions {
+    color: #eeeeee;
+    margin: 0;
+    padding: 0;
+    border: none;
+    width: 10rem;
+    font-family: "Helvetica", "Roboto", sans-serif; 
+    font-size: 12pt;
+    margin-left: 1rem;
+}
+
+#canvasContainer {
+    position: relative;
+    display: inline-block;
+}
+
+.legend {
+    position: absolute;
+    bottom: 1rem;
+    left: 1.6rem;
+    color: #eeeeee;
+    background: transparent;
+    padding: 0.5rem;
+    font-size: 16pt;
+    text-align: left; 
+}
+
+.legendItem {
+    display: flex;
+    margin: 0.2rem;
+    align-items: center;
+}
+
+.legendItem, 
+.legendItem * {
+    background: transparent;
+    font-family: "Cambria Math", "Georgia", "Times", serif;
+}
+
+.color-box {
+    height: 2pt;
+    width: 12pt;
+    margin-right: 0.4rem;
+    margin-left: 0.4rem;
+}
+
+.custom-checkbox {
+    position: relative;
+    cursor: pointer;
+    padding-left: 30px;
+    line-height: 20px;
+    margin-right: 0.4rem;
+}
+
+.custom-checkbox input {
+    position: absolute;
+    cursor: pointer;
+    opacity: 0;
+}
+
+.checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 15pt;
+    width: 15pt;
+    border-radius: 3pt;
+}
+
+.custom-checkbox .checkmark {
+    background-color: transparent;
+    border: 1pt solid;
+}
+
+.red-checkbox input:checked ~ .checkmark {
+    background-color: red;
+}
+
+.orange-checkbox input:checked ~ .checkmark {
+    background-color: orange;
+}
+
+.cyan-checkbox input:checked ~ .checkmark {
+    background-color: cyan;
+}
+
+#tOffsetSlider {
+    margin: 1rem;
+    width: 60vw;
+}
+
+#tOffsetLabel {
+}
