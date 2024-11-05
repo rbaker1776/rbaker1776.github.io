@@ -5,11 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Function Plotter</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
     <header>
         <h1 style="color: #eeeeee;">Convolution Visualizer</h1>
     </header>
+    <div class="paragraph">
+        <h2>Introduction</h2>
+        <p>This tool lets you visualize and understand the convolution of functions—an essential operation in signal processing, image analysis, and engineering. Experiment with different functions and see how they interact, giving you insight into how convolution shapes signals and transforms data.</p>
+    </div>
+    <div class="paragraph">
+        <h2>What is Convolution?</h2>
+        <p>Convolution is a mathematical operation that combines two functions \(f\) and \(g\) to produce a third function \((f⭑g)\). The term <i>convolution</i> can refer to both the resulting function and the process of computing it. It is widely used in various fields, including signal processing, image analysis, and neural networks, for its ability to detect patterns and transform data. In essence, convolution allows you to blend two signals or functions, providing insight into how they interact over time.</p>
+        <h3>Definition</h3>
+        <p>The convolution of two functions \(f(t)\) and \(g(t)\) is defined as:</p>
+        <div class="latexCentered">\((f⭑g)(t) = \int_{-\infty}^{\infty}f(\tau)g(t - \tau)d\tau\)</div>
+        <p>In this equation, \(\tau\) is a dummy variable of integration, and \(t\) is the point at which we are evaluating the convolution.</p>
+    </div>
+    <div class="paragraph">
+        <h2>How to Use This Tool</h3>
+        <h3>Select Functions</h3>
+        <p>Enter two functions \(f(t)\) and \(g(t)\) or choose from a list of predefined functions. When choosing functions, it is important to make sure they are "well behaved". A convolution is an infinite integral, but your computer can only perform finite calculations. If your convolution integral is not bounded, the tool will produce unreliable results. For example, \(f(t) = t\) and \(g(t) = sin(t)\) will produce unpredictable graphs. The problem can be fixed by multiplying the functions by unit-steps \(u(t)\).</p>
+        <h3>Plot 1</h3>
+        <p>The first canvas displays the graphs of \(f(t)\), \(g(t)\), and \((f⭑g)(t)\). Use the checkboxes in the legend to toggle visibility for each function. Feel free to pan around or zoom to get a better view.</p>
+        <h3>Plot 2</h3>
+        <p>The second canvas illustrates the convolution process by showing the two functions \(f(t)\) and \(g(t)\) sliding over one another. As one function shifts across the other, you can observe their interaction and overlap. The key concept is that the convolution of \(f\) and \(g\) is an integral under a product. This is illustrated by the fact that the height of the cyan dot is equal to the green shaded area.</p>
+    </div>
+   <br>
     <div id="canvasContainer">
         <canvas id="plotCanvas" height="400"></canvas>
         <div class="legend">
@@ -34,7 +57,7 @@
             <div class="legendItem">
                 <div class="checkbox-container">
                     <label class="custom-checkbox cyan-checkbox">
-                        <input type="checkbox" id="toggleConvolution" checked>
+                        <input type="checkbox" id="toggleConvolution">
                         <span class="checkmark", style="border-color: cyan;"></span>
                     </label>
                 </div>            
@@ -50,12 +73,15 @@
             <option value="default" disabled>-- Select One --</option>
             <option value="unitStep" selected>Unit Step</option>
             <option value="pulse">Pulse</option>
+            <option value="impulse">Impulse</option>
             <option value="expDecay">Exponential Decay</option>
             <option value="triangle">Triangle</option>
+            <option value="gaussian">Gaussian</option>
             <option value="dampedSine">Damped Sine</option>
             <option value="dampedSq">Damped Square</option>
             <option value="biphasic">Biphasic</option>
             <option value="triphasic">Triphasic</option>
+            <option value="pulseTrain">Impulse Train</option>
         </select>
     </div>
     <hr class="functionHr">
@@ -66,19 +92,23 @@
             <option value="default" disabled>-- Select One --</option>
             <option value="unitStep">Unit Step</option>
             <option value="pulse">Pulse</option>
+            <option value="impulse">Impulse</option>
             <option value="expDecay" selected>Exponential Decay</option>
             <option value="triangle">Triangle</option>
+            <option value="gaussian">Gaussian</option>
             <option value="dampedSine">Damped Sine</option>
             <option value="dampedSq">Damped Square</option>
             <option value="biphasic">Biphasic</option>
             <option value="triphasic">Triphasic</option>
+            <option value="pulseTrain">Impulse Train</option>
         </select>
     </div>
     <hr class="functionHr">
+    <br>
     <canvas id="slideCanvas" width="400" height="400"></canvas>
-    <div>
-        <input type="range" id="tOffsetSlider" name="tOffset" min="-1" max="5" step="0.001">
-    </div>
+    <footer>
+        <p>Source Code: <a href="https://github.com/rbaker1776/convolution">github.com/rbaker1776/convolution</a></p>
+    </footer>
     <script src="function.js"></script>
     <script src="core.js"></script>
 </body>

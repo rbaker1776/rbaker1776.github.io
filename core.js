@@ -1,28 +1,62 @@
 
-
-const plotScale = 2.5;
-
 class Plotter
 {
-    constructor(canvas, updateFunc)
+    constructor(canvas, redrawFunc)
     {
-        this.canvas = canvas;
-        this.ctx = canvas.getContext("2d");
-        this.aspect = canvas.width / canvas.height;
-        this.update = updateFunc;
-
+        this.redrawFunc = redrawFunc;
         this.resize = this.resize.bind(this);
         this.redraw = this.redraw.bind(this);
+        this.zoom = this.zoom.bind(this);
+        this.pan = this.pan.bind(this);
+
+        this.canvas = canvas;
+        this.ctx = canvas.getContext("2d");
+        this.aspectRatio = canvas.width / canvas.height;
+        this.scale = 3;
+
+        this.resize();
+
+        this.isPanning = false;
+        this.tMin = -this.scale * this.aspectRatio / (4 * window.devicePixelRatio);
+        this.fMax = this.scale / 2;
+        this.prevT = 0;
+        this.prevF = 0;
+
+        this.isDragging = false;
+        this.cursorT = 1.5;
+    }
+
+    canvasXtoT(x)
+    {
+        return this.tMin + (x / this.canvas.width) * this.scale * this.aspectRatio;
+    }
+
+    canvasYtoF(y)
+    {
+        return this.fMax - (y * window.devicePixelRatio / this.canvas.height) * this.scale;
+    }
+
+    tToCanvasX(t)
+    {
+        return (t - this.tMin) / (this.scale * this.aspectRatio) * this.canvas.width;
+    }
+
+    fToCanvasY(f)
+    {
+        return (this.fMax - f) / (this.scale * window.devicePixelRatio) * this.canvas.height;
     }
 
     drawAxes()
     {
         this.ctx.beginPath();
+        
+        const drawX = this.tToCanvasX(0);
+        const drawY = this.fToCanvasY(0);
 
-        this.ctx.moveTo(0, this.canvas.height / 2);
-        this.ctx.lineTo(this.canvas.width, this.canvas.height / 2);
-        this.ctx.moveTo(this.canvas.width / 2, 0);
-        this.ctx.lineTo(this.canvas.width / 2, this.canvas.height);
+        this.ctx.moveTo(drawX, 0);
+        this.ctx.lineTo(drawX, this.canvas.height);
+        this.ctx.moveTo(0, drawY);
+        this.ctx.lineTo(this.canvas.width, drawY);
 
         this.ctx.strokeStyle = "white";
         this.ctx.lineWidth = 2;
@@ -32,27 +66,57 @@ class Plotter
     drawGrid()
     {
         this.ctx.beginPath();
-       
-        const interval = Math.pow(10, Math.floor(Math.log10(plotScale)));
 
-        for (let i = 1; i <= Math.floor(plotScale * this.aspect / interval); i++)
+        const interval = Math.pow(10, Math.floor(Math.log10(this.scale / 2)));
+
+        this.ctx.font = `16pt Cambria Math`;
+        this.ctx.fillStyle = "grey";
+        this.ctx.textAlign = "right";
+
+        const tiMin = Math.floor(this.tMin / interval) * interval;
+        const tiMax = Math.floor(
+            (this.tMin + this.scale * this.aspectRatio) / interval
+        ) * interval;
+
+        const y0 = this.fToCanvasY(0);
+        const x0 = this.tToCanvasX(0);
+
+        for (let t = tiMin; t <= tiMax; t += interval)
         {
-            const drawXR = (this.canvas.width / 2) + (i * interval) * (this.canvas.height / (2 * plotScale));
-            const drawXL = (this.canvas.width / 2) - (i * interval) * (this.canvas.height / (2 * plotScale));
-            this.ctx.moveTo(drawXR, 0);
-            this.ctx.lineTo(drawXR, this.canvas.height);
-            this.ctx.moveTo(drawXL, 0);
-            this.ctx.lineTo(drawXL, this.canvas.height);
+            if (Math.abs(t) < interval / 2)
+            {
+                this.ctx.fillText(0, x0 - 5, y0 - 5);
+                continue;
+            }
+            const drawX = this.tToCanvasX(t);
+            this.ctx.moveTo(drawX, 0);
+            this.ctx.lineTo(drawX, this.canvas.height);
+            
+            if (this.scale * this.aspectRatio / interval < 30)
+                this.ctx.fillText(`${t}`, drawX - 5, y0 - 5)
+            else if (this.scale * this.aspectRatio / interval < 60 && Math.round(t / interval) % 5 == 0)
+                this.ctx.fillText(`${t}`, drawX - 5, y0 - 5)
+            else if (Math.round(t / interval) % 10 == 0)
+                this.ctx.fillText(`${t}`, drawX - 5, y0 - 5)
         }
 
-        for (let i = 1; i <= Math.floor(plotScale / interval); i++)
+        const fiMin = Math.floor((this.fMax - this.scale) / interval) * interval;
+        const fiMax = Math.floor(this.fMax / interval) * interval;
+
+        for (let f = fiMin; f <= fiMax; f += interval)
         {
-            const drawYT = (this.canvas.height / 2) + (i * interval) * (this.canvas.height / (2 * plotScale));
-            const drawYB = (this.canvas.height / 2) - (i * interval) * (this.canvas.height / (2 * plotScale));
-            this.ctx.moveTo(0, drawYT);
-            this.ctx.lineTo(this.canvas.width, drawYT);
-            this.ctx.moveTo(0, drawYB);
-            this.ctx.lineTo(this.canvas.width, drawYB);
+            if (Math.abs(f) < interval / 2)
+                continue;
+            const drawY = this.fToCanvasY(f);
+            this.ctx.moveTo(0, drawY);
+            this.ctx.lineTo(this.canvas.width, drawY);
+            
+            if (this.scale / interval < 6)
+                this.ctx.fillText(`${f}`, x0 - 5, drawY - 5)
+            else if (this.scale / interval < 18 && Math.round(f / interval) % 2 == 0)
+                this.ctx.fillText(`${f}`, x0 - 5, drawY - 5)
+            else if (Math.round(f / interval) % 10 == 0)
+                this.ctx.fillText(`${f}`, x0 - 5, drawY - 5)
         }
 
         this.ctx.strokeStyle = "grey";
@@ -60,174 +124,268 @@ class Plotter
         this.ctx.stroke();
     }
 
-    plotFunction(func, color)
+    plotFunction(ft, color)
     {
-        let yPrev = (this.canvas.height / 2) * (1 - func[0] / plotScale);
+        let yPrev = this.fToCanvasY(ft[0]);
         this.ctx.beginPath();
         this.ctx.moveTo(-1, yPrev);
 
-        for (let i = 0; i < func.length; ++i)
+        for (let i = 0; i < ft.length; ++i)
         {
             const drawX = i;
-            const drawY = Math.min(Math.max(
-                ((this.canvas.height / 2) * (1 - func[i] / plotScale))
-            , -3), this.canvas.height + 3);
-
+            const drawY = Math.min(Math.max(this.fToCanvasY(ft[i]), -3), this.canvas.height + 3);
             this.ctx.lineTo(drawX, drawY);
-
             yPrev = drawY;
         }
 
         this.ctx.strokeStyle = color;
-        this.ctx.lineWidth = 5;
+        this.ctx.lineWidth = 4;
         this.ctx.stroke();
     }
 
-    redraw() { return this.update.call(this); }
+    highlightProductArea(ft, gt, color)
+    {
+        this.ctx.beginPath();
+        const y0 = this.fToCanvasY(0);
+        let sum = 0;
+
+        for (let x = 0; x < ft.length; ++x)
+        {
+            if (gt[x] == 0 || ft[x] == 0)
+                continue;
+
+            const product = gt[x] * ft[x];
+            this.ctx.moveTo(x, y0);
+            this.ctx.lineTo(x, this.fToCanvasY(product));
+            sum += product;
+        }
+
+        this.ctx.strokeStyle = color;
+        this.ctx.lineWidth = 0;
+        this.ctx.stroke();
+
+        return sum;
+    }
+
+    drawCursor(convolutionValue)
+    {
+        this.ctx.beginPath();
+
+        const t = this.tToCanvasX(this.cursorT)
+        this.ctx.moveTo(t, 0);
+        this.ctx.lineTo(t, this.canvas.height);
+
+        this.ctx.strokeStyle = "grey";
+        this.ctx.lineWidth = 3;
+        this.ctx.setLineDash([5,5]);
+
+        this.ctx.stroke();
+        this.ctx.setLineDash([]);
+
+        this.ctx.beginPath();
+
+        this.ctx.arc(t, this.fToCanvasY(convolutionValue), 6, 0, 2 * Math.PI);
+
+        this.ctx.fillStyle = "cyan";
+        this.ctx.fill();
+    }
+
+    redraw() { return this.redrawFunc.call(this); }
 
     resize()
     {
         const width = window.innerWidth;
         const height = 300;
+        const p = Math.abs(this.tMin / (this.scale * this.aspectRatio));
 
         this.canvas.width = width * window.devicePixelRatio;
         this.canvas.height = height * window.devicePixelRatio;
-        this.aspect = width / height;
+        this.aspectRatio = width / height * window.devicePixelRatio;
+        this.tMin = -p * this.scale * this.aspectRatio;
 
-        this.ctx.scale(window, window.devicePixelRatio, window.devicePixelRatio);
+        this.ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+        
+        this.redraw();
+    }
+
+    zoom(event)
+    {
+        event.preventDefault();
+
+        const minScale = 2;
+        const maxScale = 20;
+
+        const zoomT = this.canvasXtoT(event.offsetX);
+        const centerT = Math.abs(zoomT) < this.scale * this.aspectRatio / 20 ? 0 : zoomT;
+        const ratioT = (centerT - this.tMin) / this.scale;
+
+        const zoomF = this.canvasYtoF(event.offsetY);
+        const centerF = Math.abs(zoomF) < this.scale / 20 ? 0 : zoomF;
+        const ratioF = (this.fMax - centerF) / this.scale;
+
+        this.scale = Math.max(Math.min(
+            this.scale * (1 + event.deltaY / 200)
+        , maxScale), minScale);
+        
+        this.tMin = centerT - ratioT * this.scale;
+        this.fMax = centerF + ratioF * this.scale;
+
+        this.redraw();
+    }
+
+    pan(event)
+    {
+        event.preventDefault();
+
+        if (!this.isPanning)
+            return;
+
+        const t = this.canvasXtoT(event.offsetX);
+        this.tMin += this.prevT - t;
+        const f = this.canvasYtoF(event.offsetY);
+        this.fMax += this.prevF - f;
+
+        this.redraw();
+    }
+
+    moveCursor(event)
+    {
+        event.preventDefault();
+
+        if (!this.isDragging)
+            return;
+
+        const t = this.canvasXtoT(event.offsetX);
+        this.cursorT = t;
 
         this.redraw();
     }
 }
 
-function evaluate(func, tMin, tMax, deltaT)
-{
-    func = parse(func);
-    func = func.replace(/\bt\b/g, "(t * deltaT + tMin)");
 
-    return Array.from(
-        { length: Math.ceil((tMax - tMin) / deltaT) },
-        (_, t) => eval(func)
-    );
-}
-
-function convolve(ft, gt, deltaT)
-{
-    let convolution = Array.from(
-        { length: ft.length + gt.length - 1 },
-        (_, t) => {
-            let sum = 0;
-            for (let T = Math.max(0, t - (ft.length - 1)); T < Math.min(t, ft.length - 1); T++)
-                sum += ft[t - T] * gt[T] * deltaT;
-            return sum;
-        }
-    ).slice(Math.floor(ft.length / 2), Math.floor(ft.length * 3 / 2)); 
-
-    return convolution;
-}
-
-function dropdownFunc(selection)
+function dropdownSelect(selection)
 {
     switch (selection)
     {
         case "unitStep":    return "u(t)";
-        case "pulse":       return "u(t) - u(t-1)";
+        case "pulse":       return "u(t) * u(1-t)";
+        case "impulse":     return "dd(t)";
         case "expDecay":    return "exp(-t) * u(t)";
-        case "triangle":    return "t * u(t) * u(1-t) + (2-t) * u(t-1) * u(2-t)";
+        case "triangle":    return "(1 - abs(t-1)) * u(t) * u(2-t)";
+        case "gaussian":    return "exp(-1/2 * 2*pi * t**2)"
         case "dampedSine":  return "sin(4*t) * exp(-t) * u(t)";
         case "dampedSq":    return "(-1)^floor(2*t) * exp(-floor(2*t)/2) * u(t)"
         case "biphasic":    return "exp(-t) * (u(t) * u(1-t) - u(t-1) * u(2-t))";
         case "triphasic":   return "exp(-t/2) * (u(t) * u(1-t) - u(t-1) * u(2-t) + u(t-2) * u(3-t))";
-        default: return "";
+        case "pulseTrain":  return "dd(t) - dd(t-1.2) + dd(t-2.4) - dd(t-3.6) + dd(t-4.8) - dd(t-6)";
     }
 }
 
-functionPlotter = new Plotter(document.getElementById("plotCanvas"), function() {
-    const inputFt = parse(document.getElementById("fInput").value);
-    const inputGt = parse(document.getElementById("gInput").value)
 
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.drawAxes();
-    this.drawGrid();
-    
-    const expansionFactor = 2;
-
-    const tMin = -expansionFactor * this.aspect * plotScale;
-    const deltaT = -2 * tMin / (this.canvas.width * expansionFactor);
-
-    const ft = evaluate(inputFtField.value, tMin, -tMin, deltaT);
-    const gt = evaluate(inputGtField.value, tMin, -tMin, deltaT);
-    const convolution = convolve(ft, gt, deltaT);
-
-    const beginIdx = ft.length * (1 / 2 - 1 / (2 * expansionFactor));
-    const endIdx = ft.length * (1 / 2 + 1 / (2 * expansionFactor));
-
-    if (displayGtBox.checked)
-        this.plotFunction(gt.slice(beginIdx, endIdx), "orange");
-    if (displayFtBox.checked)
-        this.plotFunction(ft.slice(beginIdx, endIdx), "red");
-    if (displayConvolutionBox.checked)
-        this.plotFunction(convolution.slice(beginIdx, endIdx), "cyan");
-});
-
-slidePlotter = new Plotter(document.getElementById("slideCanvas"), function() {
-    const inputFt = parse(document.getElementById("fInput").value)
-    const inputGt = parse(document.getElementById("gInput").value)
-
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.drawAxes();
-    this.drawGrid();
-    
-    const expansionFactor = 2;
-
-    const tMin = -expansionFactor * this.aspect * plotScale;
-    const deltaT = -2 * tMin / (this.canvas.width * expansionFactor);
-    const tOffset = tOffsetSlider.value;
-
-    const ft = evaluate(inputFtField.value, tMin, -tMin, deltaT);
-    const gt = evaluate(inputGtField.value, tMin, -tMin, deltaT);
-    const convolution = convolve(ft, gt, deltaT);
-
-    const beginIdx = ft.length * (1 / 2 - 1 / (2 * expansionFactor));
-    const endIdx = ft.length * (1 / 2 + 1 / (2 * expansionFactor));
-
-    const ftTrimmed = ft.slice(beginIdx, endIdx);
-    const gtBackwards = Array.from(
-        { length: gt.length / expansionFactor},
-        (_, i) => gt[Math.floor(endIdx + tOffset / deltaT) - i]
-    );
-
-    this.ctx.beginPath();
-
-    for (let i = 0; i < ftTrimmed.length; i++)
-    {
-        if (ftTrimmed[i] != 0 && gtBackwards[i] != 0)
-        {
-            this.ctx.moveTo(i, this.canvas.height / 2);
-            const drawY = Math.min(Math.max(
-                ((this.canvas.height / 2) * (1 - (ftTrimmed[i] * gtBackwards[i]) / plotScale))
-            , -1), this.canvas.height + 1);
-
-            this.ctx.lineTo(i, drawY);
-        }
-    }
-
-    this.ctx.strokeStyle = "rgba(0, 255, 255, 0.2)";
-    this.ctx.lineWidth = 1;
-    this.ctx.stroke();
-
-    this.plotFunction(gtBackwards, "orange");
-    this.plotFunction(ftTrimmed, "red");
-    this.plotFunction(convolution.slice(beginIdx, endIdx), "cyan");
-});
-
-const e = Math.exp(1);
-
-function dd(t)
+function redrawFunctions()
 {
-    return ((
-        t == 0 
-    ) ? (1 / 0.00001) : 0);
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.drawGrid();
+    this.drawAxes();
+
+    const inputFt = parseExpression(inputFtField.value);
+    const inputGt = parseExpression(inputGtField.value);
+
+    if (inputFt == false)
+        inputFtField.style.color = "#FF4500";
+    else
+        inputFtField.style.color = "#eeeeee";
+
+
+    if (inputGt == false)
+        inputGtField.style.color = "#FF4500";
+    else
+        inputGtField.style.color = "#eeeeee";
+
+    const tMax = this.tMin + this.scale * this.aspectRatio;
+    const maxAbsT = Math.max(Math.abs(this.tMin), tMax);
+    const deltaT = (tMax - this.tMin) / this.canvas.width;
+
+    let ft, gt, convolution;
+    if (inputFt)
+        ft = evaluate(inputFt, -maxAbsT, maxAbsT, deltaT);
+    if (inputGt)
+        gt = evaluate(inputGt, -maxAbsT, maxAbsT, deltaT);
+    if (inputFt && inputGt)
+        convolution = convolve(ft, gt, deltaT);
+    const beginIdx = Math.max(0, this.tToCanvasX(this.tMin + maxAbsT) - this.tToCanvasX(0));
+
+    if (inputGt && displayGtBox.checked)
+        this.plotFunction(gt.slice(
+            Math.max(0, gt.length * (1 - (-this.tMin + tMax) / (maxAbsT + tMax))),
+            Math.min(gt.length, gt.length * (tMax - this.tMin) / (maxAbsT - this.tMin))
+        ), "orange");
+    if (inputFt && displayFtBox.checked)
+        this.plotFunction(ft.slice(
+            Math.max(0, ft.length * (1 - (-this.tMin + tMax) / (maxAbsT + tMax))),
+            Math.min(ft.length, ft.length * (tMax - this.tMin) / (maxAbsT - this.tMin))
+        ), "red");
+    if (displayCvBox.checked)
+        this.plotFunction(convolution.slice(beginIdx, beginIdx + this.canvas.width), "cyan");
+}
+
+function redrawSliders()
+{
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.drawGrid();
+    this.drawAxes();
+
+    const inputFt = parseExpression(inputFtField.value);
+    const inputGt = parseExpression(inputGtField.value);
+
+    if (inputFt == false)
+        inputFtField.style.color = "#FF4500";
+    else
+        inputFtField.style.color = "#eeeeee";
+
+    if (inputGt == false)
+        inputGtField.style.color = "#FF4500";
+    else
+        inputGtField.style.color = "#eeeeee";
+
+    const tMax = this.tMin + this.scale * this.aspectRatio;
+    const maxAbsT = Math.max(Math.abs(this.tMin), tMax);
+    const deltaT = (tMax - this.tMin) / this.canvas.width;
+    const tOffset = this.cursorT;
+
+    let ftExtended, gtExtended, convolutionExt;
+    if (inputFt)
+        ftExtended = evaluate(inputFt, -maxAbsT, maxAbsT, deltaT);
+    if (inputGt)
+        gtExtended = evaluate(inputGt, -maxAbsT, maxAbsT, deltaT);
+    if (inputFt && inputGt)
+        convolutionExt = convolve(ftExtended, gtExtended, deltaT);
+    const beginIdx = Math.max(0, this.tToCanvasX(this.tMin + maxAbsT) - this.tToCanvasX(0));
+
+    let ft, gtBackwards, convolution;
+    if (inputFt)
+        ft = ftExtended.slice(
+            Math.max(0, ftExtended.length * (1 - (-this.tMin + tMax) / (maxAbsT + tMax))),
+            Math.min(ftExtended.length, ftExtended.length * (tMax - this.tMin) / (maxAbsT - this.tMin))
+        );
+    if (inputGt)
+        gtBackwards = evaluate(inputGt, maxAbsT + tOffset, -maxAbsT + tOffset, -deltaT).slice(
+            Math.max(0, gtExtended.length * (1 - (-this.tMin + tMax) / (maxAbsT + tMax))),
+            Math.min(gtExtended.length, gtExtended.length * (tMax - this.tMin) / (maxAbsT - this.tMin))
+        );
+    if (inputFt && inputGt)
+        convolution = convolutionExt.slice(beginIdx, beginIdx + this.canvas.width);
+
+    let area = -1e99;
+    if (inputFt && inputGt)
+        area = this.highlightProductArea(ft, gtBackwards, "rgba(0, 255, 0, 0.3)");
+    if (inputGt)
+        this.plotFunction(gtBackwards, "orange");
+    if (inputFt)
+        this.plotFunction(ft, "red");
+    if (inputFt && inputGt)
+        this.plotFunction(convolution, "cyan");
+    this.drawCursor(area * deltaT);
 }
 
 const inputFtField = document.getElementById("fInput");
@@ -238,62 +396,141 @@ const optionsGt = document.getElementById("gOptions");
 
 const displayFtBox = document.getElementById("toggleFt");
 const displayGtBox = document.getElementById("toggleGt");
-const displayConvolutionBox = document.getElementById("toggleConvolution");
+const displayCvBox = document.getElementById("toggleConvolution");
 
-const tOffsetSlider = document.getElementById("tOffsetSlider");
+const functionPlotter = new Plotter(document.getElementById("plotCanvas"), redrawFunctions);
+const slidePlotter = new Plotter(document.getElementById("slideCanvas"), redrawSliders);
+const plotters = [functionPlotter, slidePlotter];
 
-//functionPlotter.canvas.addEventListener("wheel", functionPlotter.zoom);
-//slidePlotter.canvas.addEventListener("wheel", slidePlotter.zoom);
-
-window.addEventListener("resize", function() {
-    functionPlotter.resize();
-    slidePlotter.resize();
+plotters.forEach((plotter, idx) => {
+    plotter.canvas.addEventListener("wheel", plotter.zoom);
+   
+    window.addEventListener("resize", plotter.resize);
+    
+    plotter.resize();
 });
 
-inputFtField.addEventListener("keydown", function(event) {
-    optionsFt.value = "default"; 
+
+functionPlotter.canvas.addEventListener("mousedown", (event) => {
+    functionPlotter.isPanning = true;
+    functionPlotter.prevT = functionPlotter.canvasXtoT(event.offsetX);
+    functionPlotter.prevF = functionPlotter.canvasYtoF(event.offsetY);
+});
+
+functionPlotter.canvas.addEventListener("mouseup", () => {
+    functionPlotter.isPanning = false;
+});
+
+functionPlotter.canvas.addEventListener("mouseleave", () => {
+    functionPlotter.isPanning = false;
+});
+
+functionPlotter.canvas.addEventListener("mousemove", functionPlotter.pan);
+
+
+slidePlotter.canvas.addEventListener("mousedown", (event) => {
+    const clickT = slidePlotter.canvasXtoT(event.offsetX);
+    if (Math.abs(clickT - slidePlotter.cursorT) < slidePlotter.scale * slidePlotter.aspectRatio * 0.01)
+        slidePlotter.isDragging = true;
+    else
+        slidePlotter.isPanning = true;
+
+    slidePlotter.prevT = clickT;
+    slidePlotter.prevF = slidePlotter.canvasYtoF(event.offsetY);
+});
+
+slidePlotter.canvas.addEventListener("mouseup", () => {
+    slidePlotter.isDragging = false;
+    slidePlotter.isPanning = false;
+});
+
+slidePlotter.canvas.addEventListener("mouseleave", () => {
+    slidePlotter.isDragging = false;
+    slidePlotter.isPanning = false;
+});
+
+slidePlotter.canvas.addEventListener("mousemove", (event) => {
+    if (slidePlotter.isPanning)
+        slidePlotter.pan(event);
+    else
+        slidePlotter.moveCursor(event);
+});
+
+
+inputFtField.addEventListener("keydown", (event) => {
+    optionsFt.value = "default";
+    setTimeout(functionPlotter.redraw, 20);
+    setTimeout(slidePlotter.redraw, 20);
+});
+
+inputGtField.addEventListener("keydown", (event) => {
+    optionsGt.value = "default";
     setTimeout(functionPlotter.redraw, 100);
     setTimeout(slidePlotter.redraw, 100);
 });
 
-inputGtField.addEventListener("keydown", function(event) {
-    optionsGt.value = "default"; 
-    setTimeout(functionPlotter.redraw, 100);
-    setTimeout(slidePlotter.redraw, 100);
-});
-
-optionsFt.addEventListener("change", function() {
+optionsFt.addEventListener("change", () => {
     const selection = optionsFt.value;
-    inputFtField.value = dropdownFunc(selection);
+    inputFtField.value = dropdownSelect(selection);
     functionPlotter.redraw();
     slidePlotter.redraw();
 });
 
-optionsGt.addEventListener("change", function() {
+optionsGt.addEventListener("change", () => {
     const selection = optionsGt.value;
-    inputGtField.value = dropdownFunc(selection);
+    inputGtField.value = dropdownSelect(selection);
     functionPlotter.redraw();
     slidePlotter.redraw();
 });
 
-displayFtBox.addEventListener("change", (event) => {
+displayFtBox.addEventListener("change", () => {
     setTimeout(functionPlotter.redraw, 100);
     setTimeout(slidePlotter.redraw, 100);
 });
 
-displayGtBox.addEventListener("change", (event) => {
+displayGtBox.addEventListener("change", () => {
     setTimeout(functionPlotter.redraw, 100);
     setTimeout(slidePlotter.redraw, 100);
 });
 
-displayConvolutionBox.addEventListener("change", (event) => {
+displayCvBox.addEventListener("change", () => {
     setTimeout(functionPlotter.redraw, 100);
     setTimeout(slidePlotter.redraw, 100);
 });
 
-tOffsetSlider.addEventListener("input", (event) => {
-    setTimeout(slidePlotter.redraw, 100);
-});
 
-functionPlotter.resize();
-slidePlotter.resize();
+const expandButtons = [
+    document.getElementById("expandButton1"),
+    document.getElementById("expandButton2"),
+    document.getElementById("expandButton3"),
+    document.getElementById("expandButton4"),
+    document.getElementById("expandButton5"),
+    document.getElementById("expandButton6"),
+    document.getElementById("expandButton7"),
+];
+
+expandButtons.forEach((button, idx) => {
+    button.addEventListener("mousedown", () => {
+        const newText = button.textContent == "+" ? "-" : "+";
+        const newDisplay = button.textContent == "+" ? (
+            idx == 5
+          ? "flex"
+          : "block"
+        ) : "none";
+        const newPadding = button.textContent == "+" ? "2rem": "1rem";
+        const grandparent = button.parentNode.parentNode;
+        const parent = button.parentNode;
+
+        for (let i = 0; i < grandparent.children.length; ++i)
+        {
+            const child = grandparent.children[i];
+            if (child === parent)
+                continue;
+            child.style.display = newDisplay;
+        }
+
+        grandparent.style.paddingTop = newPadding;
+        grandparent.style.paddingBottom = newPadding;
+        button.textContent = newText; 
+    });
+});

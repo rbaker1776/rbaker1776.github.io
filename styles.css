@@ -1,13 +1,77 @@
 * {
-    font-family: "Helvetica", "Roboto", sans-serif; 
     margin: 0;
     padding: 0;
     background: black;
+    color: #eeeeee;
 }
 
 header {
-    padding: 1rem;
+    display: flex;
+    padding: 1.5rem;
+    align-content: center;
+    justify-content: space-around;
+    margin-bottom: -1rem;
+}
+
+header h1 {
+    font-family: "Helvetica", "Roboto", sans-serif; 
+    font-size: 30pt;
+}
+
+h1 {
+    
+    font-family: "Helvetica", "Roboto", sans-serif; 
     font-size: 20pt;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.paragraph {
+    margin-left: clamp(1rem, 10vw, 5rem);
+    margin-right: clamp(1rem, 10vw, 5rem);
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    border-radius: 1rem;
+}
+
+.paragraphHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-right: 1rem;
+}
+
+.paragraphHeader button {
+    border: none;
+    font-size: 24pt;
+    font-style: bold;
+    font-family: "Helvetica", "Roboto", sans-serif; 
+    cursor: pointer;
+    padding: 0.3rem;
+}
+
+.paragraph h2 {
+    font-family: "Helvetica", "Roboto", sans-serif; 
+    text-align: left;
+}
+
+.paragraph h3 {
+    font-family: "Helvetica", "Roboto", sans-serif; 
+    text-align: left;
+    margin-top: 1.25rem;
+}
+
+.paragraph p {
+    margin-top: 0.5rem;
+    font-family: "Helvetica", "Roboto", sans-serif; 
+    text-align: left;
+    background-color: transparent;
+}
+
+.paragraph .latexCentered { 
+    text-align: center;
+    font-size: 14pt;
+    margin-top: 0.75rem;
 }
 
 body {
@@ -74,6 +138,7 @@ canvas {
     left: 1.6rem;
     color: #eeeeee;
     background: transparent;
+    pointer-events: none;
     padding: 0.5rem;
     font-size: 16pt;
     text-align: left; 
@@ -104,6 +169,7 @@ canvas {
     padding-left: 30px;
     line-height: 20px;
     margin-right: 0.4rem;
+    pointer-events: auto;
 }
 
 .custom-checkbox input {
@@ -138,10 +204,9 @@ canvas {
     background-color: cyan;
 }
 
-#tOffsetSlider {
-    margin: 1rem;
-    width: 60vw;
-}
-
-#tOffsetLabel {
+footer {
+    font-family: "Helvetica", "Roboto", sans-serif; 
+    color: #eeeeee;
+    font-size: 12pt;
+    padding: 1rem;
 }
