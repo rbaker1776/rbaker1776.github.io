@@ -262,7 +262,6 @@ class Plotter
     }
 }
 
-
 function dropdownSelect(selection)
 {
     switch (selection)
@@ -280,7 +279,6 @@ function dropdownSelect(selection)
         case "pulseTrain":  return "dd(t) - dd(t-1.2) + dd(t-2.4) - dd(t-3.6) + dd(t-4.8) - dd(t-6)";
     }
 }
-
 
 function redrawFunctions()
 {
@@ -388,9 +386,10 @@ function redrawSliders()
     this.drawCursor(area * deltaT);
 }
 
-document.addEventListener("DOMContentLoaded", () =>
+document.addEventListener("DOMContentLoaded", function()
 {
     const inputFtField = document.getElementById("fInput");
+    console.log(inputFtField.value);
     const inputGtField = document.getElementById("gInput");
 
     const optionsFt = document.getElementById("fOptions");
