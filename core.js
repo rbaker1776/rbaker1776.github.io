@@ -280,6 +280,22 @@ function dropdownSelect(selection)
     }
 }
 
+const inputFtField = document.getElementById("fInput");
+console.log(inputFtField.value);
+const inputGtField = document.getElementById("gInput");
+
+const optionsFt = document.getElementById("fOptions");
+const optionsGt = document.getElementById("gOptions");
+
+const displayFtBox = document.getElementById("toggleFt");
+const displayGtBox = document.getElementById("toggleGt");
+const displayCvBox = document.getElementById("toggleConvolution");
+
+const functionPlotter = new Plotter(document.getElementById("plotCanvas"), redrawFunctions);
+const slidePlotter = new Plotter(document.getElementById("slideCanvas"), redrawSliders);
+const plotters = [functionPlotter, slidePlotter];
+
+
 function redrawFunctions()
 {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -388,21 +404,6 @@ function redrawSliders()
 
 document.addEventListener("DOMContentLoaded", function()
 {
-    const inputFtField = document.getElementById("fInput");
-    console.log(inputFtField.value);
-    const inputGtField = document.getElementById("gInput");
-
-    const optionsFt = document.getElementById("fOptions");
-    const optionsGt = document.getElementById("gOptions");
-
-    const displayFtBox = document.getElementById("toggleFt");
-    const displayGtBox = document.getElementById("toggleGt");
-    const displayCvBox = document.getElementById("toggleConvolution");
-
-    const functionPlotter = new Plotter(document.getElementById("plotCanvas"), redrawFunctions);
-    const slidePlotter = new Plotter(document.getElementById("slideCanvas"), redrawSliders);
-    const plotters = [functionPlotter, slidePlotter];
-
     plotters.forEach((plotter, idx) => {
         plotter.canvas.addEventListener("wheel", plotter.zoom);
        
