@@ -281,7 +281,6 @@ function dropdownSelect(selection)
 }
 
 const inputFtField = document.getElementById("fInput");
-console.log(inputFtField.value);
 const inputGtField = document.getElementById("gInput");
 
 const optionsFt = document.getElementById("fOptions");
