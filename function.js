@@ -1,80 +1,93 @@
 
 
 const e = Math.exp(1);
-
 const pi = Math.PI;
 
-function u(t)
-{
-    return (t >= 0 ? 1 : 0);
-}
+const u = (t) => {
+    return (t >= -1e-10 ? 1 : 0);
+};
 
-function dd(t, deltaT)
-{
-    return (
-        Math.abs(t) <= Math.abs(deltaT / 2)
-      ? 1 / Math.abs(deltaT)
-      : 0
-    );
-}
+const dd_epsilon = 5e-3
+const dd = (t) => {
+    return (Math.abs(t) < dd_epsilon ? 1 / (2 * dd_epsilon) : 0);
+};
 
-function evaluate(func, tMin, tMax, deltaT)
-{
-    return Array.from(
-        { length: Math.ceil((tMax - tMin) / deltaT) },
-        (_, t) => eval(func)
-    );
-}
+const sin = Math.sin;
+const cos = Math.cos;
 
-function convolve(ft, gt, deltaT)
-{
-    return Array.from(
-        { length: ft.length + gt.length - 1 },
-        (_, t) => {
-            let sum = 0;
-            for (let T = Math.max(0, t - (ft.length - 1)); T < Math.min(t, ft.length - 1); ++T)
-                sum += ft[t-T] * gt[T] * deltaT;
-            return sum;
-        }
-    ).slice(Math.floor(ft.length / 2), Math.floor(ft.length * 3/2));
-}
+const abs = Math.abs;
+const sqrt = Math.sqrt;
+const cbrt = Math.cbrt;
 
-function parseExpression(expression)
+const exp = Math.exp;
+const log = Math.log;
+const log10 = Math.log10;
+const log2 = Math.log2;
+
+const floor = Math.floor;
+const ceil = Math.ceil;
+const min = Math.min;
+const max = Math.max;
+
+
+function parse_fn(expression)
 {
     expression = expression
-        .replace(/\s+/g, "")
-        .replace(/\bsin\b/g, "Math.sin")
-        .replace(/\bcos\b/g, "Math.cos")
-        .replace(/\btan\b/g, "Math.tan")
-        .replace(/\babs\b/g, "Math.abs")
-        .replace(/\bsqrt\b/g, "Math.sqrt")
-        .replace(/\bcbrt\b/g, "Math.cbrt")
-        .replace(/\bexp\b/g, "Math.exp")
-        .replace(/\blog\b/g, "Math.log")
-        .replace(/\blog10\b/g, "Math.log10")
-        .replace(/\blog2\b/g, "Math.log2")
-        .replace(/\bfloor\b/g, "Math.floor")
-        .replace(/\bceil\b/g, "Math.ceil")
-        .replace(/\bmin\b/g, "Math.min")
-        .replace(/\bmax\b/g, "Math.max")
-        .replace(/\^/g, "**")
-        .replace(/dd\(([^)]*)\)/g, (match, p1) => {
-            return `dd(${p1}, deltaT)`;
-        })
-        .replace(/\bt\b/g, "(t * deltaT + tMin)");
+        .replace(/\s+/g, '') // remove whitespace
+        .replace(/\b\^\b/g, '**') // replace '^' with '**' for exponentiation
 
-    const t = 0;
-    const tMin = 0;
-    const deltaT = 1;
-    
-    try
-    {
-        const result = eval(expression);
-        return expression;
-    }
-    catch (error)
-    {
-        return false;
-    }
+    // replace a number followed by a variable with a multiplication expression
+    expression = expression.replace(/(\d)([a-zA-Z\(])/g, "$1*$2");
+
+    return expression;
 }
 
+
+const cache_fuzz = 5e-3
+
+function memoize(fn)
+{
+    const cache = new Map();
+
+    return function(t)
+    {
+        t = Math.round(t / cache_fuzz) * cache_fuzz;
+        if (cache.has(t))
+        {
+            return cache.get(t);
+        }
+        const result = fn(t);
+        cache.set(t, result);
+        return result;
+    };
+}
+
+// calculates the convolution of two functions
+function convolve(f, g, t_min, t_max, delta_t)
+{
+    return memoize((t) => {
+        let sum = 0;
+        for (let T = t_min - (t_max - t_min); T <= t_max + (t_max - t_min); T += delta_t)
+            sum += f(T) * g(t - T) * delta_t;
+        return sum;
+    });
+}
+
+
+function dropdown_select(selection)
+{
+    switch(selection)
+    {
+        case "unit-step":   return "u(t)";
+        case "pulse":       return "u(t) * u(1 - t)";
+        case "impulse":     return "dd(t)";
+        case "exp-decay":   return "exp(-t) * u(t)";
+        case "ramp":        return "(1 - abs(t-1)) * u(t) * u(2-t)"
+        case "gaussian":    return "exp(-pi * t**2)"
+        case "damped-sin":  return "sin(4*t) * exp(-t) * u(t)";
+        case "damped-sq":   return "(-1)**floor(2*t) * exp(-floor(2*t)/2) * u(t)"
+        case "biphasic":    return "exp(-t) * (u(t) * u(1-t) - u(t-1) * u(2-t))";
+        case "triphasic":   return "exp(-t/2) * (u(t) * u(1-t) - u(t-1) * u(2-t) + u(t-2) * u(3-t))";
+        case "pulse-train": return "dd(t) - dd(t-1.2) + dd(t-2.4) - dd(t-3.6) + dd(t-4.8) - dd(t-6)";
+    }
+}
