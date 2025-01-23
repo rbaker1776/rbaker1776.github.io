@@ -3,272 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Convolution Visualizer</title>
+    <title>Intro to Modern C++</title>
     <link rel="stylesheet" href="styles.css">
-    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script> <!-- latex formatting -->
 </head>
 
 <body>
     <header>
-        <h1 style="color: var(--text-color)">Convolution Visualizer</h1>
-        <div class="header-buttons">
-            <button id="theme-button"><img id="theme-icon" src="./static/images/moon-icon.png" alt="Dark Mode" /></button> 
+        <div style="display: flex">
+            <img id="course-logo" src="assets/images/purdue-ieee-logo.png" alt="Purdue IEEE Logo"/>
+            <div id="course-title">
+                <h3>Purdue IEEE</h3>
+                <h1>Intro to Modern C++</h1>
+                <h4>Spring 2025</h4>
+            </div>
         </div>
+        <img id="menu-icon" src="assets/images/menu-icon.png" alt="Menu" onclick="toggle_menu()"/>
     </header>
 
-    <div class="paragraph">
-        <h2>Introduction</h2>
-        <p>This tool lets you visualize and understand the convolution of two functions—an essential operation in signal processing, image analysis, and engineering. Experiment with different functions and see how they interact, giving you insight into how convolution shapes signals and transforms data.</p>
+    <hr id="header-bar">
+
+    <div id="gray-menu-bg" class="hidden" onclick="toggle_menu()"></div>
+
+    <div id="side-menu" class="hidden">
+        <div style="display: flex; width: 100%; justify-content: right; margin-top: 2rem;">
+            <img id="close-button" src="assets/images/close-button.webp" alt="Close" onclick="toggle_menu()"/>
+        </div>
+        <div class="paragraph">
+            <h2>Content</h2>
+            <p><a href="#" class="disabled">Week 1: Introduction to C++</a></p>
+            <p><a href="#" class="disabled">Week 2: C++ Programming Basics</a></p>
+            <p><a href="#" class="disabled">Week 3: How C++ Works</a></p>
+            <p><a href="#" class="disabled">Week 4: Intro to OOP in C++</a></p>
+            <p><a href="#" class="disabled">Week 5: Advanced C++ OOP</a></p>
+            <p><a href="#" class="disabled">Week 6: C++ Templates</a></p>
+            <p><a href="#" class="disabled">Week 7: The C++ Standard Library</a></p>
+            <p><a href="#" class="disabled">Week 8: Safety in C++</a></p>
+            <p><a href="#" class="disabled">Week 9: Compile-Time Programming</a></p>
+        </div>
     </div>
 
     <div class="paragraph">
-        <h2>What is Convolution?</h2>
-        <p>Convolution is a mathematical operation that combines two functions \(f\) and \(g\) to produce a third function \((f*g)\). It is widely used in signal processing, image analysis, and neural networks, for its ability to detect patterns and transform data. In essence, convolution allows you to blend two signals or functions, providing insight into how they interact over time.</p>
-        <h3>Definition</h3>
-        <p>The convolution of two functions \(f(t)\) and \(g(t)\) is defined as:</p>
-        <div class="equation" style="margin-top: 0.5rem;">\((f*g)(t) = \int_{-\infty}^{\infty}f(\tau)g(t - \tau)d\tau\)</div>
-        <p>Where:</p>
-        <ul>
-            <li>\(t\) is the point at which we are evaluating the convolution.</li>
-            <li>\(\tau\) is a variable of integration.</li>
-        </ul>
-        <p>The operation involves multiplying the function \(f(t)\) with a shifted and reversed version of \(g(t)\), and then integrating over all values of \(\tau\). In discrete signal processing, this becomes a summation over discrete values:</p>
-        <div class="equation" style="margin-top: 0.5rem;">\((f*g)[t] = \sum_{\tau = -\infty}^{\infty}{f[\tau]g[t-\tau]}\)</div>
+        <h2>Course Description</h2>
+        <p>Software Saturdays is a free course, sponsored by Purdue IEEE and the College of Engineering. This program is for any Purdue student who is seeking to learn a new  software development skill, spruce up their resume, or is just interested in software. Additionally, everyone can earn a College of Engineering certification upon completion. These look great on LinkedIn pages and resumes alike.</p>
+        <p>
+        This course offers a comprehensive introduction to modern C++ programming. You will learn the basics of C++, the core principles of object-oriented programming, memory management, and advanced features that make C++ unique. You will gain hands-on experience with the most powerful features of C++, such as smart pointers, lambda expressions, the Standard Template Library (STL), and more. By the end of the course, you’ll be equipped to write efficient, maintainable, and scalable code, and you’ll be ready to tackle real-world development challenges in C++. Whether you’re new to programming or just new to C++, this course will give you a solid foundation to become an effective software engineer.
+        </p>
     </div>
 
-    <div class="paragraph">
-        <h2>How to Use This Tool</h2>
-        <ol>
-            <li style="margin-top: 0.45rem;"><p><b>Select Functions: </b>Enter two functions \(f(t)\) and \(g(t)\) or choose from a list of predefined functions.</p></li>
-            <li><p><b>View Functions: </b>The first canvas displays the graphs of \(f(t)\), \(g(t)\), and \((f*g)(t)\).</p></li>
-            <li><p><b>Visualize Convolution: </b>The second canvas illustrates the convolution process by showing \(g(t)\) sliding backwards over \(f(t)\). As it slides across, the value of the convolution integral is illustrated by the green shaded area; the integral over the product of the sliding functions. You can view the convolution at different points in time by dragging the dotted line left or right. The <i>area</i> shaded in green should equal the <i>height</i> of the convolution at any given point in time.</p></li>
-        </ol>
+    <div class="paragraph" id="sign-up-sec">
+        <h2>Sign Up Here!</h2>
+        <p>If you're a Purdue student looking to sharpen your programming skills, fill out <a href="https://forms.gle/GsKTDEXfL8hJ5YBw7">this form</a>.</p>
+        <p>There will be an information session on Thursday, Jan 30 in GRIS 103. Feel free to attend or email with any questions.</p>
     </div>
 
-    <hr class="function-hr">
+    <hr class="sep-bar">
 
-    <div id="plot-canvas-container" style="margin-bottom: 0rem;">
-        <canvas id="plot-canvas"></canvas>
-        <div class="legend">
-            <div class="legend-item">
-                <div class="checkbox-container">
-                    <label class="legend-checkbox" id="ft-legend-checkbox">
-                        <input type="checkbox" id="ft-checkbox" checked>
-                        <span class="checkmark" style="border-color: var(--ft-color);"></span>
-                    </label>
-                </div>            
-                <span>f(t)</span>
-            </div>
-            <div class="legend-item">
-                <div class="checkbox-container" id="gt-legend-checkbox">
-                    <label class="legend-checkbox">
-                        <input type="checkbox" id="gt-checkbox" checked>
-                        <span class="checkmark" style="border-color: var(--gt-color);"></span>
-                    </label>
-                </div>            
-                <span>g(t)</span>
-            </div>
-            <div class="legend-item">
-                <div class="checkbox-container" id="conv-legend-checkbox">
-                    <label class="legend-checkbox">
-                        <input type="checkbox" id="conv-checkbox" checked>
-                        <span class="checkmark" style="border-color: var(--conv-color);"></span>
-                    </label>
-                </div>            
-                <span>(f ✽ g)(t)</span>
-            </div>
-        </div> <!-- class="legend" -->
-    </div>
+    <div class="paragraph" id="course-outline">
+        <h2>Course Outline</h2>
+
+        <h3>Week 1: Introduction to C++</h3>
+        <p>In the first week, you'll learn about C++'s role in modern software engineering and set up your development environment. You'll also cover the basics of C++ syntax, structure, and compiling code, and write your first simple C++ program.</p>
+        
+        <h3>Week 2: C++ Programming Basics</h3>
+        <p>In the second week, you'll cover functions, conditionals, and control flow. You'll also learn about the concept of scope and how it relates to variable lifetimes.</p>
+        
+        <h3>Week 3: How C++ Works</h3>
+        <p>In the third week, you'll learn about the C++ build process, memory management, pointers, and references. You'll gain a deeper understanding of how C++ works under the hood.</p>
+        
+        <h3>Week 4: Introduction to OOP in C++</h3>
+        <p>In week 4, you'll learn about arrays, classes, and structs in C++. You'll also explore the concepts of member visibility and static members.</p>
+        
+        <h3>Week 5: Advanced OOP in C++</h3>
+        <p>In the fifth week, you'll cover advanced object-oriented concepts, such as the principles of OOP, operator overloading, and the basics of design patterns.</p>
     
-    <hr class="function-hr">
+        <h3>Week 6: Templates in C++</h3>
+        <p>In the sixth week, you'll be introduced to templates, which are one of the defining features of C++. You'll learn how to define function templates, class templates, as well as variadic templates and non-type template parameters (NTTPs).</p>
 
-    <div class="function-input" style="margin-top: 0.4rem;">
-        <p class="function-label">f(t) =</p>
-        <input type="text" class="function-text" id="f-input" placeholder="exp(-t) * u(t)" value="exp(-t / 2) * u(t)">
-        <select class="function-options" id="f-options" name="f-options">
-            <option value="default" disabled selected>-- Select One --</option>
-            <option value="unit-step">Unit Step</option>
-            <option value="pulse">Pulse</option>
-            <option value="impulse">Impulse</option>
-            <option value="exp-decay">Exponential Decay</option>
-            <option value="ramp">Ramp</option>
-            <option value="gaussian">Gaussian</option>
-            <option value="damped-sin">Damped Sine</option>
-            <option value="damped-sq">Damped Square</option>
-            <option value="biphasic">Biphasic</option>
-            <option value="triphasic">Triphasic</option>
-            <option value="pulse-train">Impulse Train</option>
-        </select> <!-- class="function-options" -->
+        <h3>Week 7: The C++ Standard Library</h3>
+        <p>In week 7, you'll explore various containers, algorithms, and modules provided by the C++ standard library.</p>
+
+        <h3>Week 8: Safety in C++</h3>
+        <p>In the eighth week, you'll learn about undefined behavior, memory safety with smart pointers, and exception safety in C++.</p>
+
+        <h3>Week 9: Compile-Time Programming</h3>
+        <p>In week 9, you'll explore more advanced C++ features such as lambda expressions, compile-time programming, and an introduction to template metaprogramming.</p>
     </div>
 
-    <hr style="margin: 0.45rem 0; height: 0; border: none;">
-
-    <div class="function-input" style="margin-bottom: 0.4rem;">
-        <p class="function-label">g(t) =</p>
-        <input type="text" class="function-text" id="g-input" placeholder="sin(t) / t * u(t)" value="2 * sin(t) / t * u(t)">
-        <select class="function-options" id="g-options" name="g-options">
-            <option value="default" disabled selected>-- Select One --</option>
-            <option value="unit-step">Unit Step</option>
-            <option value="pulse">Pulse</option>
-            <option value="impulse">Impulse</option>
-            <option value="exp-decay">Exponential Decay</option>
-            <option value="ramp">Ramp</option>
-            <option value="gaussian">Gaussian</option>
-            <option value="damped-sin">Damped Sine</option>
-            <option value="damped-sq">Damped Square</option>
-            <option value="biphasic">Biphasic</option>
-            <option value="triphasic">Triphasic</option>
-            <option value="pulse-train">Impulse Train</option>
-        </select> <!-- class="function-options" -->
+    <div class="paragraph" id="instructor-info">
+        <h2>Instructors</h2>
+        <div>
+            <div>
+                <h3>Ryan Baker</h3>
+                <p><b>Email</b>: baker852@purdue.edu</p>
+            </div>
+        </div>
     </div>
 
-    <hr class="function-hr">
-    <canvas id="slide-canvas"></canvas>
-    <hr class="function-hr">
-
-    <div class="paragraph">
-        <h2>Choosing Functions</h2>
-        <p>A convolution is an infinite integral. This poses problems for computation. It is important to keep this in mind when choosing functions to convolve. If you the input functions are not <i>well behaved</i>, the convolution result will be inaccurate. This problem can usually be fixed by multiplying both functions by a unit step. For example, \(f(t) = t\) and \(g(t) = sin(t)\) produces an unreliable convolution, while \(f(t) = tu(t)\) and \(g(t) = sin(t)u(t)\) is stable.</p>
-    </div>
-
-    <div class="paragraph">
-        <table>
-            <thead>
-                <th>Syntax</th>
-                <th>Function</th>
-                <th>Definition</th>
-            </thead>
-            <tbody>
-                <tr>
-                    <td class="funcSyntax">e</td>
-                    <td class="funcName">  Euler's Number</td>
-                    <td class="funcDef">\(\approx 2.71828182846...\)</td>
-                </tr>
-                <tr>
-                    <td class="funcSyntax">pi</td>
-                    <td class="funcName">  π</td>
-                    <td class="funcDef">\(\approx 3.14159265359...\)</td>
-                </tr>
-                <tr>
-                    <td class="funcSyntax">u(t)</td>
-                    <td class="funcName">  Unit Step / Heaviside Step</td>
-                    <td class="funcDef">  \(
-                        u(t) = 
-                        \begin{cases}
-                            1 & \textrm{if } t \geq 0 \\
-                            0 & \textrm{if } t < 0 \\
-                        \end{cases}
-                    \)</td>
-                </tr>
-                <tr>
-                    <td class="funcSyntax">dd(t)</td>
-                    <td class="funcName">  Dirac Delta</td>
-                    <td class="funcDef">  \(
-                        \delta(t) = 
-                        \begin{cases}
-                            \infty & \textrm{if } t = 0 \\
-                            0 & \textrm{if } t ≠ 0 \\
-                        \end{cases}
-                    \)</td>
-                </tr>
-                <tr>
-                    <td class="funcSyntax">sin(t)</td>
-                    <td class="funcName">  Sine Wave</td>
-                    <td class="funcDef">  \(sin(t)\)</td>
-                </tr>
-                <tr>
-                    <td class="funcSyntax">cos(t)</td>
-                    <td class="funcName">  Cosine Wave</td>
-                    <td class="funcDef">  \(cos(t)\)</td>
-                </tr>
-                <tr>
-                    <td class="funcSyntax">abs(t)</td>
-                    <td class="funcName">  Absolute Value</td>
-                    <td class="funcDef">  \(|t|\)</td>
-                </tr>
-                <tr>
-                    <td class="funcSyntax">sqrt(t)</td>
-                    <td class="funcName">  Square Root</td>
-                    <td class="funcDef">  \(\sqrt{t}\)</td>
-                </tr>
-                <tr>
-                    <td class="funcSyntax">cbrt(t)</td>
-                    <td class="funcName">  Cube Root</td>
-                    <td class="funcDef">  \({t}^{\frac{1}{3}}\)</td>
-                </tr>
-                <tr>
-                    <td class="funcSyntax">exp(t)</td>
-                    <td class="funcName">  Exponential</td>
-                    <td class="funcDef">  \(e^t\)</td>
-                </tr>
-                <tr>
-                    <td class="funcSyntax">log(t)</td>
-                    <td class="funcName">  Natural Logarithm</td>
-                    <td class="funcDef">  \(log_{e}({t})\)</td>
-                </tr>
-                <tr>
-                    <td class="funcSyntax">log10(t)</td>
-                    <td class="funcName">  Base 10 Logarithm</td>
-                    <td class="funcDef">  \(log_{10}(t)\)</td>
-                </tr>
-                <tr>
-                    <td class="funcSyntax">log2(t)</td>
-                    <td class="funcName">  Base 2 Logarithm</td>
-                    <td class="funcDef">  \(log_{2}(t)\)</td>
-                </tr>
-                <tr>
-                    <td class="funcSyntax">floor(t)</td>
-                    <td class="funcName">  Floor Function</td>
-                    <td class="funcDef">  \(\lfloor{t}\rfloor\)</td>
-                </tr>
-                <tr>
-                    <td class="funcSyntax">ceil(t)</td>
-                    <td class="funcName">  Ceiling Function</td>
-                    <td class="funcDef">  \(\lceil{t}\rceil\)</td>
-                </tr>
-                <tr>
-                    <td class="funcSyntax">min(a, b)</td>
-                    <td class="funcName">  Minimum</td>
-                    <td class="funcDef">  \(
-                        min(a, b) =
-                        \begin{cases}
-                            a & \textrm{if } a \leq b \\
-                            b & \textrm{if } a > b \\
-                        \end{cases}
-                    \)</td>
-                </tr>
-                <tr>
-                    <td class="funcSyntax">max(a, b)</td>
-                    <td class="funcName">  Maximum</td>
-                    <td class="funcDef">  \(
-                        max(a, b) =
-                        \begin{cases}
-                            a & \textrm{if } a \geq b \\
-                            b & \textrm{if } a < b \\
-                        \end{cases}
-                    \)</td>
-                </tr>
-                <tr>
-                    <td class="funcSyntax">c ? a : b</td>
-                    <td class="funcName">  Piecewise / Ternary Operator</td>
-                    <td class="funcDef">   \(
-                        =
-                        \begin{cases}
-                            a & \textrm{if } c \\
-                            b & \textrm{if } \neg c \\
-                        \end{cases}
-                    \)</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-
-    <footer>
-        <p>Source Code: <a href="https://github.com/rbaker1776/convolution">github.com/rbaker1776/convolution-visualizer</a></p>
-    </footer>
-
-    <script src="./colorscheme.js"></script>
-    <script src="./plotter.js"></script>
-    <script src="./function.js"></script>
     <script src="./core.js"></script>
 </body>
