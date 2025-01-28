@@ -1,8 +1,8 @@
 :root
 {
-    /* light mode colors */
-    --bg-color: #ffffff;
-    --text-color: rgba(4, 7, 21, 1);
+    --bg-color-1: rgba(3, 6, 17, 1);
+    --bg-color-2: rgba(15, 18, 25, 1);
+    --text-color: rgba(255, 255, 255, 1);
     --ieee-blue: rgba(30, 76, 146, 1);
     --ieee-gold: rgba(202, 185, 142, 1);
 
@@ -29,7 +29,21 @@ header
     padding-bottom: 2.4rem;
     padding-left: var(--margin-lr);
     padding-right: var(--margin-lr);
-    background-color: var(--text-color);
+    background-color: var(--bg-color-2);
+}
+
+footer
+{
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding-top: 1.2rem;
+    padding-bottom: 1.2rem;
+    padding-left: var(--margin-lr);
+    padding-right: var(--margin-lr);
+    background-color: rgba(15, 18, 25);
+    font-family: var(--sans-serif);
+    color: var(--text-color);
 }
 
 #course-logo
@@ -74,7 +88,7 @@ header
 {
     width: 100%;
     height: 6pt;
-    background-color: var(--ieee-blue);
+    background-color: rgba(31, 34, 52);
     border: none;
 }
 
@@ -92,7 +106,7 @@ header
     right: -80%;
     width: 80%;
     height: 100%;
-    background-color: var(--bg-color);
+    background-color: var(--bg-color-1);
     transition: right 0.35s ease-in-out;
     padding-top: 1.2rem;
 }
@@ -135,26 +149,38 @@ header
 
 .paragraph
 {
-    margin-left: var(--margin-lr);
-    margin-right: var(--margin-lr);
-    margin-top: 2rem;
-    margin-bottom: 2rem;
-    border-radius: 1rem;
+    padding-left: var(--margin-lr);
+    padding-right: var(--margin-lr);
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    margin: 0;
     color: var(--text-color);
+    background-color: var(--bg-color-1);
+}
+
+.paragraph h1
+{
+    font-family: var(--sans-serif);
+    text-align: left;
 }
 
 .paragraph h2
 {
     font-family: var(--sans-serif);
     text-align: left;
-    margin-top: 2.4rem;
+    margin-top: 1rem;
 }
 
 .paragraph h3
 {
     font-family: var(--sans-serif);
     text-align: left;
-    margin-top: 1.5rem;
+}
+
+.paragraph h4
+{
+    font-family: var(--sans-serif);
+    text-align: left;
 }
 
 .paragraph p
@@ -182,18 +208,6 @@ a.disabled
     text-decoration: none
 }
 
-#sign-up-sec,
-#instructor-info
-{
-    margin: 0;
-    padding-left: var(--margin-lr);
-    padding-right: var(--margin-lr);
-    padding-top: 0.001rem;
-    padding-bottom: 2rem;
-    background: var(--ieee-gold);
-    border-radius: 0;
-}
-
 .sep-bar
 {
     border: none;
@@ -206,4 +220,26 @@ a.disabled
 {
     width: 40pt;
     padding-right: var(--margin-lr);
+}
+
+.resource-row
+{
+    margin-top: 1rem;
+    display: flex;
+}
+
+.resource-card
+{
+    color: var(--text-color);
+    border-radius: 0.5rem;
+    border: none;
+    padding: 1rem;
+    width: calc((100% - 2 * var(--margin-lr) - 2rem) / 3);
+    margin-left: 1rem;
+    background-color: rgba(31, 34, 52, 1);
+}
+
+a
+{
+    color: lightblue;
 }
