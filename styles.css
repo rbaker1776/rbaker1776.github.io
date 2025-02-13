@@ -1,10 +1,16 @@
 :root
 {
-    --bg-color-1: rgba(3, 6, 17, 1);
-    --bg-color-2: rgba(15, 18, 25, 1);
-    --text-color: rgba(255, 255, 255, 1);
-    --ieee-blue: rgba(30, 76, 146, 1);
-    --ieee-gold: rgba(202, 185, 142, 1);
+    /* light mode colors */
+    --bg-color: #FFFFFF;
+    --text-color: #080808;
+    --axis-color: #222222;
+    --grid-color: #666666;
+    --ft-color: #E00039;
+    --gt-color: #F89900;
+    --conv-color: #2E76F8;
+    --area-color: rgba(0, 127, 14, 0.6);
+    --err-color: #B22222;
+    --path-color: #f5b402;
 
     /* fonts */
     --sans-serif: "Helvetica", "Roboto", sans-serif;
@@ -12,179 +18,85 @@
 
     /* page margins */
     --margin-lr: clamp(1rem, 10vw, 5rem);
+}
 
-
-*
+[data-theme="dark"]
 {
-    padding: 0;
+    /* dark mode colors */
+    --bg-color: #000B1C;
+    --text-color: #FFFFFF;
+    --axis-color: #DDDDDD;
+    --grid-color: #888888;
+    --ft-color: #ff0000;
+    --gt-color: #ffa500;
+    --conv-color: #00ffff;
+    --area-color: rgba(0, 255, 0, 0.3);
+    --err-color: #E22222;
+    --path-color: #E9F23F;
+}
+
+* /* default settings */
+{
     margin: 0;
+    padding: 0;
+    background: var(--bg-color);
 }
 
 header
 {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
     padding-top: 2.4rem;
-    padding-bottom: 2.4rem;
-    padding-left: var(--margin-lr);
-    padding-right: var(--margin-lr);
-    background-color: var(--bg-color-2);
-}
-
-footer
-{
-    display: flex;
     align-items: center;
-    justify-content: space-around;
-    padding-top: 1.2rem;
-    padding-bottom: 1.2rem;
-    padding-left: var(--margin-lr);
-    padding-right: var(--margin-lr);
-    background-color: rgba(15, 18, 25);
-    font-family: var(--sans-serif);
-    color: var(--text-color);
-}
-
-#course-logo
-{
-    height: 64pt;
-    margin-right: 2.4rem;
-}
-
-#course-title
-{
-    display: flex;
-    flex-direction: column;
-    align-items: left;
     justify-content: space-between;
+    margin-left: var(--margin-lr);
+    margin-right: var(--margin-lr);
 }
 
-#course-title h1
+header h1
 {
     font-family: var(--sans-serif);
-    font-size: 27pt;
-    color: white;
+    font-size: 30pt;
 }
 
-#course-title h3
+.header-buttons
 {
-    font-family: var(--sans-serif);
-    font-size: 14pt;
-    font-style: italic;
-    font-weight: 300;
-    color: white;
-}
-
-#course-title h4
-{
-    font-family: var(--sans-serif);
-    font-size: 10pt;
-    font-weight: 500;
-    color: white;
-}
-
-#header-bar
-{
-    width: 100%;
-    height: 6pt;
-    background-color: rgba(31, 34, 52);
-    border: none;
-}
-
-#menu-icon
-{
-    height: 40pt;
-    padding-left: 2.4rem;
     cursor: pointer;
 }
 
-#side-menu
+.header-buttons button
 {
-    position: fixed;
-    top: 0;
-    right: -80%;
-    width: 80%;
-    height: 100%;
-    background-color: var(--bg-color-1);
-    transition: right 0.35s ease-in-out;
-    padding-top: 1.2rem;
+    border: none;
 }
 
-#side-menu.hidden
+.header-buttons button img
 {
-    right: -80%;
-}
-
-#side-menu:not(.hidden)
-{
-    right: 0;
-}
-
-#side-menu li
-{
-    margin-left: var(--margin-lr);
-}
-
-#gray-menu-bg
-{
-    position: fixed;
-    top: 0;
-    right: -20%;
-    width: 20%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.72);
-    transition: right 0.35s ease-in-out;
-}
-
-#gray-menu-bg.hidden
-{
-    right: -20%;
-}
-
-#gray-menu-bg:not(.hidden)
-{
-    right: 80%;
+    width: 24pt;
 }
 
 .paragraph
 {
-    padding-left: var(--margin-lr);
-    padding-right: var(--margin-lr);
-    padding-top: 2rem;
-    padding-bottom: 2rem;
-    margin: 0;
+    margin-left: var(--margin-lr);
+    margin-right: var(--margin-lr);
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    border-radius: 1rem;
     color: var(--text-color);
-    background-color: var(--bg-color-1);
-}
-
-.paragraph h1
-{
-    font-family: var(--sans-serif);
-    text-align: left;
 }
 
 .paragraph h2
 {
     font-family: var(--sans-serif);
     text-align: left;
-    margin-top: 1rem;
+    margin-top: 2.4rem;
 }
 
-.paragraph h3
-{
+.paragraph h3 {
     font-family: var(--sans-serif);
     text-align: left;
+    margin-top: 1.5rem;
 }
 
-.paragraph h4
-{
-    font-family: var(--sans-serif);
-    text-align: left;
-}
-
-.paragraph p
-{
+.paragraph p {
     margin-top: 0.5rem;
     font-family: var(--sans-serif); 
     text-align: left;
@@ -192,54 +104,203 @@ footer
     line-height: 1.5;
 }
 
-.paragraph li
-{
+.paragraph li {
     margin-left: 2rem;
     text-align: left;
     font-family: var(--sans-serif);
     line-height: 1.5;
 }
 
-a.disabled
+.paragraph .equation
 {
-    pointer-events: none;
-    cursor: default;
-    color: gray;
-    text-decoration: none
+    text-align: center;
+    font-size: 14pt;
+    line-height: 1.8;
 }
 
-.sep-bar
+#plot-canvas-container
 {
-    border: none;
+    position: relative;
+    display: inline-block;
+}
+
+canvas
+{
     width: 100%;
-    height: 0pt;
-    background-color: gray;
 }
 
-#close-button
+.legend
 {
-    width: 40pt;
-    padding-right: var(--margin-lr);
+    position: absolute;
+    bottom: 1rem;
+    left: 1.6rem;
+    color: var(--text-color);
+    background: transparent;
+    pointer-events: none;
+    padding: 0.5rem;
+    font-size: 16pt;
+    text-align: left; 
 }
 
-.resource-row
+.legend-item
 {
-    margin-top: 1rem;
     display: flex;
+    margin: 0.2rem;
+    align-items: center;
 }
 
-.resource-card
+.legend-item,
+.legend-item *
+{
+    background: transparent;
+    font-family: var(--serif);
+}
+
+.legend-checkbox
+{
+    position: relative;
+    cursor: pointer;
+    padding-left: 30px;
+    line-height: 20px;
+    margin-right: 0.4rem;
+    pointer-events: auto;
+}
+
+.legend-checkbox input
+{
+    position: absolute;
+    cursor: pointer;
+    opacity: 0;
+}
+
+.checkmark
+{
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 15pt;
+    width: 15pt;
+    border-radius: 3pt;
+}
+
+.legend-checkbox .checkmark {
+    background-color: transparent;
+    border: 1pt solid;
+}
+
+#ft-legend-checkbox input:checked ~ .checkmark
+{
+    background-color: var(--ft-color);
+}
+
+#gt-legend-checkbox input:checked ~ .checkmark
+{
+    background-color: var(--gt-color);
+}
+
+#conv-legend-checkbox input:checked ~ .checkmark
+{
+    background-color: var(--conv-color);
+}
+
+.function-input
+{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 3rem;
+    margin-right: 3rem;
+    padding: 0.6rem 0;
+}
+
+.function-label
+{
+    color: var(--grid-color);
+    font-family: var(--serif);
+    font-size: 24pt;
+    font-style: italic;
+    margin-right: 0.75rem;
+    border: none;
+}
+
+.function-text
+{
+    width: calc(100vw - 24rem);
+    font-family: var(--serif);
+    font-size: 24pt;
+    border: none;
+    margin-right: 0;
+    color: var(--text-color);
+}
+
+.function-options
 {
     color: var(--text-color);
-    border-radius: 0.5rem;
     border: none;
-    padding: 1rem;
-    width: calc((100% - 2 * var(--margin-lr) - 2rem) / 3);
+    width: 10rem;
+    font-family: var(--sans-serif);
+    font-size: 12pt;
     margin-left: 1rem;
-    background-color: rgba(31, 34, 52, 1);
 }
 
-a
+table
 {
-    color: lightblue;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 1.6rem;
+}
+
+td, th
+{
+    padding: 0.3rem 2rem;
+    text-align: left;
+    color: var(--text-color);
+}
+
+th
+{
+    font-size: 14pt;
+    font-family: var(--sans-serif);
+    text-align: center;
+}
+
+.funcSyntax
+{
+    font-size: 12pt;
+    font-family: var(--serif);
+    color: var(--text-color);
+    text-align: center;
+}
+
+.funcName
+{
+    font-size: 12pt;
+    font-family: "Helvetica", "Roboto", sans-serif; 
+    color: var(--text-color);
+    text-align: center;
+}
+
+footer
+{
+    display: flex;
+    align-items: space-around;
+    width: 100%;
+    font-family: var(--sans-serif);
+    color: var(--text-color);
+    font-size: 12pt;
+    text-align: center;
+    padding-bottom: 2rem;
+}
+
+footer p
+{
+    width: 100%;
+    text-align: center;
+}
+
+.function-hr {
+    margin-top: 0;
+    border: none;
+    border-top: 1pt solid var(--axis-color);
 }
